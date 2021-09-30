@@ -18,9 +18,9 @@ import se331.lab.rest.security.repository.AuthorityRepository;
 import se331.lab.rest.security.repository.UserRepository;
 
 import javax.transaction.Transactional;
-import java.sql.Date;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Date;
 
 @Component
 public class InitApp implements ApplicationListener<ApplicationReadyEvent> {
@@ -34,16 +34,17 @@ public class InitApp implements ApplicationListener<ApplicationReadyEvent> {
     AuthorityRepository authorityRepository;
     @Autowired
     UserRepository userRepository;
+
     @Override
     @Transactional
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
-        Organizer org1,org2,org3;
+        Organizer org1, org2, org3;
         org1 = organizerRepository.save(Organizer.builder()
                 .name("CAMT").build());
         org2 = organizerRepository.save(Organizer.builder()
                 .name("CMU").build());
         org3 = organizerRepository.save(Organizer.builder()
-        .name("ChiangMai").build());
+                .name("ChiangMai").build());
         Event tempEvent;
         tempEvent = eventRepository.save(Event.builder()
                 .category("Academic")
@@ -89,26 +90,23 @@ public class InitApp implements ApplicationListener<ApplicationReadyEvent> {
                 .build());
         tempEvent.setOrganizer(org3);
         org3.getOwnEvents().add(tempEvent);
-
         addUser();
     }
-    User user1, user2, user3;
-    private void addUser(){
-        PasswordEncoder encoder = new BCryptPasswordEncoder();
-        Authority authUser =
-                Authority.builder().name(AuthorityName.ROLE_USER).build();
-        Authority authAdmin =
-                Authority.builder().name(AuthorityName.ROLE_ADMIN).build();
 
+    User user1, user2, user3;
+
+    private void addUser() {
+        PasswordEncoder encoder = new BCryptPasswordEncoder();
+        Authority authUser = Authority.builder().name(AuthorityName.ROLE_USER).build();
+        Authority authAdmin = Authority.builder().name(AuthorityName.ROLE_ADMIN).build();
         user1 = User.builder()
                 .username("admin")
                 .password(encoder.encode("admin"))
                 .firstname("admin")
                 .lastname("admin")
-                .email("admin@gmail.com")
+                .email("admin@admin.com")
                 .enabled(true)
-                .lastPasswordResetDate(Date.from(LocalDate.of(2021, 01,
-                        01).atStartOfDay(ZoneId.systemDefault()).toInstant()))
+                .lastPasswordResetDate(Date.from(LocalDate.of(2021, 01, 01).atStartOfDay(ZoneId.systemDefault()).toInstant()))
                 .build();
 
         user2 = User.builder()
@@ -118,22 +116,17 @@ public class InitApp implements ApplicationListener<ApplicationReadyEvent> {
                 .lastname("user")
                 .email("enabled@user.com")
                 .enabled(true)
-                .lastPasswordResetDate(Date.from(LocalDate.of(2021, 01,
-                        01).atStartOfDay(ZoneId.systemDefault()).toInstant()))
+                .lastPasswordResetDate(Date.from(LocalDate.of(2021, 01, 01).atStartOfDay(ZoneId.systemDefault()).toInstant()))
                 .build();
-
         user3 = User.builder()
                 .username("disableUser")
                 .password(encoder.encode("disableUser"))
                 .firstname("disableUser")
                 .lastname("disableUser")
-                .email("edisableUser@user.com")
-                .enabled(true)
-                .lastPasswordResetDate(Date.from(LocalDate.of(2021, 01,
-                        01).atStartOfDay(ZoneId.systemDefault()).toInstant()))
+                .email("disableUser@user.com")
+                .enabled(false)
+                .lastPasswordResetDate(Date.from(LocalDate.of(2021, 01, 01).atStartOfDay(ZoneId.systemDefault()).toInstant()))
                 .build();
-
-
         authorityRepository.save(authUser);
         authorityRepository.save(authAdmin);
         user1.getAuthorities().add(authUser);
@@ -143,6 +136,6 @@ public class InitApp implements ApplicationListener<ApplicationReadyEvent> {
         userRepository.save(user1);
         userRepository.save(user2);
         userRepository.save(user3);
-
+        
     }
 }

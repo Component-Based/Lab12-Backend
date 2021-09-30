@@ -1,8 +1,5 @@
 package se331.lab.rest.security.config;
 
-
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mobile.device.DeviceHandlerMethodArgumentResolver;
@@ -15,18 +12,15 @@ import java.util.List;
 
 @Configuration
 public class MobileConfig implements WebMvcConfigurer {
+
     @Bean
-    public DeviceResolverHandlerInterceptor deviceResolverHandlerInterceptor() {
+    public DeviceResolverHandlerInterceptor deviceResolverHandlerInterceptor(){
         return new DeviceResolverHandlerInterceptor();
     }
-
-
     @Bean
-    public DeviceHandlerMethodArgumentResolver deviceHandlerMethodArgumentResolver() {
+    public DeviceHandlerMethodArgumentResolver deviceHandlerMethodArgumentResolver(){
         return new DeviceHandlerMethodArgumentResolver();
     }
-
-
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(deviceResolverHandlerInterceptor());
