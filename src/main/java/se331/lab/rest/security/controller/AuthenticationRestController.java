@@ -13,10 +13,17 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import se331.lab.rest.entity.Event;
+import se331.lab.rest.repository.OrganizerRepository;
 import se331.lab.rest.security.JwtTokenUtil;
+import se331.lab.rest.security.entity.Authority;
+import se331.lab.rest.security.entity.AuthorityName;
 import se331.lab.rest.security.entity.JwtUser;
 import se331.lab.rest.security.entity.User;
+import se331.lab.rest.security.repository.AuthorityRepository;
 import se331.lab.rest.security.repository.UserRepository;
 import se331.lab.rest.util.LabMapper;
 
@@ -42,6 +49,12 @@ public class AuthenticationRestController {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    AuthorityRepository authorityRepository;
+
+    @Autowired
+    OrganizerRepository organizerRepository;
 
     @PostMapping("${jwt.route.authentication.path}")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtAuthenticationRequest authenticationRequest, Device device) throws AuthenticationException {
@@ -83,5 +96,18 @@ public class AuthenticationRestController {
         }
     }
 
+    @PostMapping("${jwt.route.authentication.path}/user")
+    public ResponseEntity<?> addUser(@RequestBody User user) {
+        Authority authUser = Authority.builder().name(AuthorityName.ROLE_USER).build();
+        PasswordEncoder encoder = new BCryptPasswordEncoder();
+
+        authorityRepository.save(authUser);
+        user.getAuthorities().add(authUser);
+        user.setEnabled(true);
+        user.setPassword(encoder.encode(user.getPassword()));
+        User output = userRepository.save(user);
+        return ResponseEntity.ok(output);
+
+    }
 
 }
